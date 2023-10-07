@@ -68,6 +68,8 @@ class TestCxfIT {
 		Holder<Security> header2 = HeadersUtil.getHeaderSecurity("x");
 		OTAAirLowFareSearchRQ body = createBody();
 		
+		// fail, after about 30 seconds of execution, receive 'Unable to internalize message'
+		// expect to receive 'Invalid or Expired binary security token', because i didnt put real credencials
 		OTAAirLowFareSearchRS sabre = Uni.createFrom()
 			.future((Future<OTAAirLowFareSearchRS>)advancedAirShoppingPortType.advancedAirShoppingRQAsync(header , header2 , body , r->{}))
 			.await().atMost(Duration.ofMinutes(1));
@@ -83,6 +85,7 @@ class TestCxfIT {
 		Exception exception = Assertions.assertThrows(SOAPFaultException.class,
 				() -> advancedAirShoppingPortType.advancedAirShoppingRQ(header , header2 , body));
 		
+		// success, expect to receive 'Invalid or Expired binary security token', because i didnt put real credencials
 		Assertions.assertTrue(exception.getMessage().contains("Invalid or Expired binary security token"));
 	}
 
