@@ -54,15 +54,6 @@ class TestCxfIT {
 	AdvancedAirShoppingPortType advancedAirShoppingPortType;
 	
 	@Test
-	void numberConversion() {
-		String numberConversion = Uni.createFrom()
-			.future((Future<NumberToWordsResponse>)numberConversionSoapType.numberToWordsAsync(new BigInteger("1"), r->{}))
-			.map(a->a.getNumberToWordsResult())
-			.await().atMost(Duration.ofSeconds(10));
-		System.out.println(">>>"+numberConversion);
-	}
-	
-	@Test
 	void sabreAsyncFail() {
 		Holder<MessageHeader> header = HeadersUtil.getHeaderMessage("AdvancedAirShoppingRQ");
 		Holder<Security> header2 = HeadersUtil.getHeaderSecurity("x");
@@ -89,6 +80,17 @@ class TestCxfIT {
 		Assertions.assertTrue(exception.getMessage().contains("Invalid or Expired binary security token"));
 	}
 
+	@Test
+	void numberConversionSuccess() {
+		// test another webservice using https, https://documenter.getpostman.com/view/8854915/Szf26WHn
+		String numberConversion = Uni.createFrom()
+			.future((Future<NumberToWordsResponse>)numberConversionSoapType.numberToWordsAsync(new BigInteger("1"), r->{}))
+			.map(a->a.getNumberToWordsResult())
+			.await().atMost(Duration.ofSeconds(10));
+		
+		System.out.println(">>>"+numberConversion);
+	}
+	
 	private OTAAirLowFareSearchRQ createBody() {
 		OTAAirLowFareSearchRQ body = new OTAAirLowFareSearchRQ();
 		body.setTarget("x");
